@@ -1,0 +1,214 @@
+---
+title: "Stock Price Predictions"
+author: "Peter Sullivan"
+date: "1/9/2022"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidyquant)
+library(dplyr)
+library(lubridate)
+library(reticulate)
+library(DT)
+```
+
+ 
+```{r gather stock data}
+
+Stock = "AAPL"
+
+start_date <- Sys.Date()
+start_date
+retrieval_date <- start_date - years(4)
+
+Stock_data <- tq_get(Stock, get = "stock.prices", from = retrieval_date, to = start_date)
+
+Stock_data
+
+#tq_get("AAPL", get ="stock.prices", from =  retrieval_date, to = "2021-01-03")
+
+#datatable(Stock_data)
+```
+
+
+# Getting Signals
+
+```{r}
+Stock_data <- Stock_data %>%
+  group_by(symbol) %>%
+  tq_mutate(select = close,
+            mutate_fun = MACD,
+            col_rename = c("MACD", "Signal"))%>%
+  tq_mutate(select = adjusted, mutate_fun = RSI) %>%
+  tq_mutate(select = adjusted, mutate_fun = BBands, col_rename = "Bbands") %>%
+  tq_mutate_xy(x = close, y =volume, mutate_fun = EVWMA, col_rename = "EVWMA") %>%
+  mutate(Stock_movement = case_when(
+    lag(close)- close > 0 ~ "Decrease",
+    close > lag(close) ~ "Increase",
+    close == lag(close) ~"No Change"
+  ) 
+           ) %>%
+  select(symbol:adjusted,Stock_movement,MACD,rsi,EVWMA)
+
+Stock_data <- Stock_data %>% mutate(Movement_prediction = lead(Stock_movement)) %>% filter(Stock_movement != "No Change")
+
+
+
+str(Stock_data)
+
+
+```
+
+
+
+
+```{r normalize data}
+
+Stock_data <- Stock_data[complete.cases(Stock_data),]
+
+
+
+```
+
+```{r predicting current price}
+
+Stock_data %>% head()
+predictors <- Stock_data[c("close","volume","MACD","rsi","EVWMA")]
+
+x <- lm(close ~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+summary(x)
+
+Stock_data$prediction <- predict(x, Stock_data)
+
+cor(Stock_data$prediction,Stock_data$close)
+
+```
+
+```{r Adding lag closes}
+Stock_data
+
+Stock_data <- Stock_data %>% mutate(forecast1day = lead(close,1),
+                                    forecast1week = lead(close,7),
+                                    forecast2week = lead(close,14),
+                                    forecast4week = lead(close,31),
+                                    forecast2month = lead(close,60),
+                                    forecast4month = lead(close,120))
+
+Stock_data %>% head(10) %>% select(close, forecast1day,forecast1week)
+Stock_data <- Stock_data[complete.cases(Stock_data),]
+```
+
+```{r Regression Models}
+Stock_data %>% colnames()
+
+
+
+current <- lm(close ~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+forecast1daymodel <- lm(forecast1day ~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+forecast1weekmodel <- lm(forecast1week ~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+forecast2weekmodel <- lm(forecast2week ~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+forecastmonthmodel <-lm(forecast4week~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+forecast2monthmodel <- lm(forecast2month~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+forecast4monthmodel <- lm(forecast4month~ volume + MACD+ rsi+ EVWMA , data = Stock_data)
+summary(current)
+summary(forecast1weekmodel)
+summary(forecast2weekmodel)
+summary(forecast1weekmodel)
+summary(forecastmonthmodel)
+summary(forecast2monthmodel)
+summary(forecast4monthmodel)
+
+Stock_data$currentPrediction <- predict(current, Stock_data)
+Stock_data$day1prediction <- predict(forecast1daymodel, Stock_data)
+Stock_data$day7prediction <- predict(forecast1weekmodel, Stock_data)
+Stock_data$day14prediction <- predict(forecast2weekmodel, Stock_data)
+Stock_data$day31prediction <- predict(forecastmonthmodel, Stock_data)
+
+cor(Stock_data$currentPrediction,Stock_data$close)
+
+Stock_data$forecast1week %>% dim()
+cor(Stock_data$day1prediction, Stock_data$forecast1day)
+cor(Stock_data$day7prediction, Stock_data$forecast1week)
+cor(Stock_data$day14prediction, Stock_data$forecast2week)
+cor(Stock_data$day31prediction, Stock_data$forecast4week)
+
+Stock_data
+
+
+Stock_data %>% ggplot()+
+  geom_point(aes(x = date, Stock_data$day7prediction), color ="red")+
+  geom_point(aes(x = date, Stock_data$forecast2week), color ="blue")
+
+
+Stock_data %>% ggplot()+
+  geom_point(aes(x = date, Stock_data$day31prediction), color ="red")+
+  geom_point(aes(x = date, Stock_data$forecast4week), color ="blue")
+
+
+Stock_data %>% ggplot()+
+  geom_point(aes(x = date, Stock_data$day7prediction), color ="red")+
+  geom_point(aes(x = date, Stock_data$forecast1week), color ="blue")
+
+
+```
+```{r Applying Models to future prices}
+
+
+#pull new data
+
+
+
+
+start_date <- Sys.Date()
+start_date
+retrieval_date <- start_date - months(6)
+
+new_stock_data <- tq_get(Stock, get = "stock.prices", from = retrieval_date, to = start_date)
+
+
+new_stock_data <- new_stock_data %>%
+  group_by(symbol) %>%
+  tq_mutate(select = close,
+            mutate_fun = MACD,
+            col_rename = c("MACD", "Signal"))%>%
+  tq_mutate(select = adjusted, mutate_fun = RSI) %>%
+  tq_mutate(select = adjusted, mutate_fun = BBands, col_rename = "Bbands") %>%
+  tq_mutate_xy(x = close, y =volume, mutate_fun = EVWMA, col_rename = "EVWMA") %>%
+  mutate(Stock_movement = case_when(
+    lag(close)- close > 0 ~ "Decrease",
+    close > lag(close) ~ "Increase",
+    close == lag(close) ~"No Change"
+  ) 
+           ) %>%
+  select(symbol:adjusted,Stock_movement,MACD,rsi,EVWMA)
+
+new_stock_data$monthforecast <- predict(forecastmonthmodel, new_stock_data)
+new_stock_data$week2forecast <- predict(forecast2weekmodel, new_stock_data)
+new_stock_data$month2forecast <- predict(forecast2monthmodel, new_stock_data)
+new_stock_data$month4forecast <- predict(forecast4monthmodel, new_stock_data)
+
+new_stock_data$monthforecastdate <- new_stock_data$date + days(31)
+new_stock_data$week2forecastdate <- new_stock_data$date +days(14)
+new_stock_data$month2forecastdate <- new_stock_data$date+ days(60)
+new_stock_data$month4forecastdate <- new_stock_data$date +days(120)
+
+new_stock_data
+
+
+new_stock_data %>% ggplot()+
+  geom_line(aes(x = monthforecastdate, y = monthforecast),color = "red")+
+  geom_line(aes(x = week2forecastdate, y = week2forecast),color = "green")+
+  geom_line(aes(x = date, y = close), color = "blue")+
+  geom_line(aes(x = month2forecastdate, y = month2forecast) ,color = "orange")+
+  geom_line(aes(x = month4forecastdate, y = month4forecast), color = "gray")
+
+new_stock_data %>% select(monthforecastdate,monthforecast) %>% filter(monthforecastdate > "2022-01-01")
+
+new_stock_data$date
+```
+
+
