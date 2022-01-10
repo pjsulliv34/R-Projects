@@ -7,7 +7,7 @@ Here are a collection of Projects I've worked on. The projects below were primar
 [Austrailian Weather Data - HW 4](https://pjsulliv34.github.io/dacss601/HW4/AustrailiaWeatherData.html) <br />
 [Stroke Data - HW 5](https://pjsulliv34.github.io/dacss601/HW5/HW5_StrokeData.html) <br />
 [Final_Project](https://pjsulliv34.github.io/dacss601/Final/Final-Project.html) <br />
-[StockPrice_LookUp](https://pjsulliv34.shinyapps.io/Stock_Prices_LookUp/)
+[StockPrice_LookUp](https://pjsulliv34.shinyapps.io/Stock_Prices_LookUp/)<br />
 [Drink Size Calculator](https://pjsulliv34.shinyapps.io/DrizeSizeCalculator/)
 Enter in drinks, and find out Blood alcohol percentage and how many drinks ones consummed.
 
@@ -17,15 +17,14 @@ Enter in drinks, and find out Blood alcohol percentage and how many drinks ones 
 [Regression Analysis](https://pjsulliv34.github.io/DACSS603/Final_Project.html)
 
 
-[Regression Plots](https://pjsulliv34.shinyapps.io/Regression_Plots/)
-
+[Regression Plots](https://pjsulliv34.shinyapps.io/Regression_Plots/)<br />
 Pre Set with Dow Jones Stocks. Allows user to set date range to look at regression lines, prices and volume of stock.
 
-[Regression Plots 2](https://pjsulliv34.shinyapps.io/RegressionApp_2/)
+[Regression Plots 2](https://pjsulliv34.shinyapps.io/RegressionApp_2/)<br />
 Same as above, but you can run for any stock.
 
-[Predicting Stock Prices](https://pjsulliv34.github.io/R-Projects/Stock-Price-Predictions.html)
+[Predicting Stock Prices](https://pjsulliv34.github.io/R-Projects/Stock-Price-Predictions.html)<br />
 Enter in a price of a stock and predict stock prices up to two months ahead.
 
-Python Projects
+Python Projects<br />
 Webpage Scrapper
