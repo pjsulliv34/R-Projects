@@ -1,5 +1,4 @@
-# R-Projects
-
+Here are a collection of Projects I've worked on. The projects below were primarily done in R.
 
 ## Lists of Projects
 
