@@ -11,8 +11,8 @@ Here are a collection of Projects I've worked on. The projects below were primar
 [Drink Size Calculator](https://pjsulliv34.shinyapps.io/DrizeSizeCalculator/)
 Enter in drinks, and find out Blood alcohol percentage and how many drinks ones consummed.
 
-###Machine Learning
-####Regression Analysis
+### Machine Learning
+#### Regression Analysis
 
 [Regression Analysis](https://pjsulliv34.github.io/DACSS603/Final_Project.html)
 
