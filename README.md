@@ -22,4 +22,5 @@ Pre Set with Dow Jones Stocks. Allows user to set date range to look at regressi
 [Regression Plots 2](https://pjsulliv34.shinyapps.io/RegressionApp_2/)
 Same as above, but you can run for any stock.
 
-[Predicting Stock Prices]
+[Predicting Stock Prices](https://pjsulliv34.github.io/R-Projects/Stock-Price-Predictions.html)
+Enter in a stock and predict prices up to two months based on the last 4 years of data
