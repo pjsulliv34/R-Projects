@@ -8,7 +8,7 @@ Here are a collection of Projects I've worked on. The projects below were primar
 [Stroke Data - HW 5](https://pjsulliv34.github.io/dacss601/HW5/HW5_StrokeData.html) <br />
 [Final_Project](https://pjsulliv34.github.io/dacss601/Final/Final-Project.html) <br />
 [StockPrice_LookUp](https://pjsulliv34.shinyapps.io/Stock_Prices_LookUp/)<br />
-[Drink Size Calculator](https://pjsulliv34.shinyapps.io/DrizeSizeCalculator/)
+[Drink Size Calculator](https://pjsulliv34.shinyapps.io/DrizeSizeCalculator/)<br />
 Enter in drinks, and find out Blood alcohol percentage and how many drinks ones consummed.
 
 ### Machine Learning
