@@ -15,7 +15,7 @@ Find out BAC and how many standard drinks one has consumed.
 Semi-Supervised Machine Learning solution. Look directing at alcohol data set with the purpose of prediciting abuse of alcohol.
 [Predicting Stock Prices](https://pjsulliv34.github.io/R-Projects/Stock-Price-Predictions.html)<br />
 Enter in a price of a stock and predict stock prices up to two months ahead using technicals.
-[Crime in the Time of Covid](https://pjsulliv34.github.io/R-Projects/Crime-in-the-Time-of-Covid_Final.html)
+[Crime in the Time of Covid](https://pjsulliv34.github.io/R-Projects/Crime-in-the-Time-of-Covid_Final.html)<br />
 Using linear regression to predict crimes based on covid deaths.
 
 #### Data Visualizations 
