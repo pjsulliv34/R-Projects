@@ -1,0 +1,445 @@
+---
+title: "Crime in the Time of Covid"
+author: "Peter Sullivan"
+date: "11/3/2021"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+---
+
+# Introduction
+
+In this hectic time of Covid 19 the world is changing, and its changing quickly. So quickly in fact that we barely have enough data to understand how these pandemic is really affecting our society. In this paper I will take a closer look into the effect of the covid Pandemic on Crime rates in the United States. I've obtained Crime Statistics from the Federal Bureau of Investigation (FBI), and Covid Statistics from CDC.
+
+Utilizing the FBI's and the CDC's publicly available data, I'm proposing that Crime rates in the are United States are inversely related to the current covid 19 Hype in the United States. In other words, the stronger the covid 19 hype in a particular state, the lower the expected crimes.
+
+
+# Method
+
+```{r Read in DATA, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(tm)
+getwd()
+crime_2020 <- read_csv("Arrest_by_State_2020.csv", na = c("", "NA"))
+crime_2019 <- read_csv("Arrest_by_State_2019.csv",na = c("", "NA"))
+
+
+```
+
+
+
+## Gather, Clean and Prep
+
+
+
+The first Step is to read in the Data. I obtained the Arrests by State records for the United States for 2020 and 2019. After I read in the data, the next step is to clean the data in order to prepare for the analysis
+
+When pulling in the data, I noticed multiple issues. For example the column that included the State name was not showing the correct state for each row. The State names showed numbers when they should only have the name. The crime descriptor columns were written in ways that didn't make sense. To fix these issues I used the following code below. Since the 2019 and 2020 csv sheets are in the same format, once I fixed one sheet, I just needed to repeat the same steps for the 2019 code.
+
+```{r echo=TRUE}
+# 2020 Cleaning
+USA_2020_crimes <- crime_2020 %>% fill(State)
+USA_2020_crimes<-  USA_2020_crimes %>% mutate(States = removeNumbers(State))
+Crime_data <- rename(USA_2020_crimes,  "Property Crimes" = "Property\ncrime2", 
+"Rape" = "Rape3", 
+"Aggravated Assault" = "Aggravated\nassault",
+ "Drug and Abuse Violations" = "Drug \nabuse\nviolations", 
+"Violent Crimes" = "Violent\ncrime2", "Murder" = "Murder and\nnonnegligent\nmanslaughter" )
+Crime_data$States[Crime_data$States == "FLORIDA, "]<- "FLORIDA"
+
+
+#2019 Cleaning
+USA_2019_crimes <- crime_2019 %>% fill(State)
+USA_2019_crimes<-  USA_2019_crimes %>% mutate(States = removeNumbers(State))
+Crime_data_2019 <- rename(USA_2019_crimes,  "Property Crimes" = "Property\ncrime2", 
+"Rape" = "Rape3",
+"Aggravated Assault" = "Aggravated\nassault",
+"Drug and Abuse Violations" = "Drug \nabuse\nviolations",
+"Violent Crimes" = "Violent\ncrime2", "Murder" = "Murder and\nnonnegligent\nmanslaughter" )
+Crime_data_2019$States[Crime_data_2019$States == "FLORIDA, " ] <- "FLORIDA"
+
+
+
+```
+
+
+## Initial Plots
+
+
+Now that the data is cleaned, I can now take initial glimpses into the data I've collected. To perform this I used the package "usmap". The way this package works is that you use the fips_info from the usmap package to tell the plot "usmap" function which states, citys and regions you plan to map. For this project, I am focusing on all States. So before I can plot my crime data, I first need to join the fips_info with my crime data. That way the plot us map function knows which state to correctly link what ever values I plan on plotting. For this project I decided to focus on only a few crimes, Property crimes, Aggravated Assault, and Murder. 
+
+
+```{r}
+library(usmap)
+state_info <- fips_info()
+state_info <- state_info %>% mutate("States" = toupper(full)) 
+crimes <- c("Property Crimes", "Aggravated Assault","Murder")
+
+# Plotting 2020 Crimes
+for (crime in crimes){
+  x <-  Crime_data %>% filter(X2 =="Total all ages") %>% select(States,crime) %>% 
+    distinct(States, .keep_all = TRUE)
+  y <- full_join(x,state_info, by = "States")
+  z <- plot_usmap(data = y, values = crime, labels = TRUE, color = "gray")+ 
+scale_fill_continuous(low = "white", high = "blue", name = paste(crime), 
+label = scales::comma)+
+    labs(title = paste(crime,"in the US"), subtitle = "2020 Crime DATA")+
+    theme(panel.background = element_rect(color = "black", fill = "lightblue")) +
+theme(legend.position = "right")
+  print(z)
+}
+
+# Plotting 2019 
+for (crime in crimes){
+  x <-  Crime_data_2019 %>% filter(X2 =="Total all ages") %>% select(States,crime) %>% distinct(States, .keep_all = TRUE)
+  y <- full_join(x,state_info, by = "States")
+  z <- plot_usmap(data = y, values = crime, labels = TRUE, color = "gray")+ scale_fill_continuous(low = "white", high = "blue", name = paste(crime), label = scales::comma)+
+    labs(title = paste(crime,"in the US"), subtitle = "2019 Crime DATA")+
+    theme(panel.background = element_rect(color = "black", fill = "lightblue")) + theme(legend.position = "right")
+  print(z)
+}
+
+```
+
+### 2020 and 2019 Results
+
+In all three figures for both 2020 and 2019, CA has the highest amount of crimes. There may be a lot of crime there, but this could also be due to the amount of population. Due to this issue, with out having the per-capita results, this data could be misleading. In order to really understand whats going on here I will need to dive deeper into the data.
+
+
+
+## Futher Analysis
+
+To truly understand what is happening, the total crimes themselves itself don't matter. Instead I want to see the % change of crimes from 2019 to 2020. I will do this for all three crimes listed. Once I have the % change in crimes listed, then I can compare agains the covid data.
+
+
+```{r % Change Analysis}
+
+Crime_data_2020_1 <- Crime_data %>% filter(X2 =="Total all ages") %>% select(States,`Property Crimes`,`Aggravated Assault`,Murder) %>% distinct(States, .keep_all = TRUE)
+
+Crime_data_2019_1 <- Crime_data_2019 %>%  filter(X2 =="Total all ages") %>% select(States,`Property Crimes`,`Aggravated Assault`,Murder) %>% distinct(States, .keep_all = TRUE) %>% rename("Property crime 2019" = `Property Crimes`, "Aggravated Assault 2019"= `Aggravated Assault`, "Murder 2019" = Murder)
+
+# Join DATA and Create Percent change columns
+
+Crime_Change_data <- inner_join(Crime_data_2019_1,Crime_data_2020_1, by = "States")
+Crime_Change_data <- Crime_Change_data %>% mutate(
+  "Property Crime % Change" = (`Property Crimes` - `Property crime 2019`)/(`Property crime 2019`),
+  "Aggravated Assualt % Change" = (`Aggravated Assault` - `Aggravated Assault 2019`)/ (`Aggravated Assault 2019`),
+  "Murder % Change" = (Murder - `Murder 2019`)/`Murder 2019`
+)
+```
+
+The code block above shows how I combined the 2020 and 2019 data and then created a calculated column for each crime.
+
+## Plot Percent Change of Crime DATA
+```{r}
+
+crimes <- c("Property Crime % Change", "Aggravated Assualt % Change","Murder % Change")
+
+# Plotting 2020 Crimes
+for (crime in crimes){
+  y <- full_join(Crime_Change_data,state_info, by = "States")
+  z <- plot_usmap(data = y, values = crime, labels = TRUE, color = "gray")+ 
+     scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, space = "Lab", 
+   name="% Change")+
+    #scale_fill_continuous(low = "yellow", high = "blue", name = paste(crime), label = scales::comma)+
+    labs(title = paste(crime,"in the US"), subtitle = "2020 Crime DATA")+
+    theme(panel.background = element_rect(color = "black", fill = "lightblue")) + theme(legend.position = "right")
+  print(z)
+}
+
+
+
+```
+
+
+## Results
+
+These results are much better then the previous maps above. As we can see California and Texas are no longer in the top states for any of the crimes.
+
+For Property crimes we an increase in Georgia and West Virginia, and a decrease in Pennsylvania and Delaware. For Aggravated Assault, Pennsylvania was the lowest, with others showing little to no increase. It looks like Georgia and Alabama were the only states with an increase from 2019 to 2020 for aggravated assault. It looks like murder did increase country wide except for PA and NM.
+
+To truly understand these changes, I will also give a table of the top and bottom states for each crimes % change.
+
+
+```{r}
+library(knitr)
+
+crimes <- c("Property Crime % Change", "Aggravated Assualt % Change","Murder % Change")
+
+Crime_Change_data %>% arrange(`Property Crime % Change`) %>% select(States,`Property Crime % Change`) %>% slice(1:5) %>% kable(caption = "Largest Decrease in Property Crime")
+Crime_Change_data %>% arrange(desc(`Property Crime % Change`)) %>% select(States, `Property Crime % Change`) %>% slice(1:5) %>% kable(caption = "Largest Increase in Property Crime")
+
+Crime_Change_data %>% arrange(`Aggravated Assualt % Change`) %>% select(States,`Aggravated Assualt % Change`) %>% slice(1:5) %>% kable(caption = "Largest Decrease in Assault")
+Crime_Change_data %>% arrange(desc(`Aggravated Assualt % Change`)) %>% select(States, `Aggravated Assualt % Change`) %>% slice(1:5) %>% kable(caption = "Largest Increase in Assault")
+
+Crime_Change_data %>% arrange(`Murder % Change`) %>% select(States,`Murder % Change`) %>% slice(1:5) %>% kable(caption = "Largest Decrease in Murder")
+Crime_Change_data %>% arrange(desc(`Murder % Change`)) %>% select(States, `Murder % Change`) %>% slice(1:5) %>% kable(caption = "Largest Increase in Murder")
+
+
+
+```
+## Results
+
+The Tables above show the top 5 states per crime for largest increase in percentage and the top 5 states for the largest decrease in percentage. The largest decrease for all three crimes is from Pennsylvania and that was at 1%. The largest increase was for Alabama, which was an 6% increase in aggravated assault.
+
+# Method Continued
+
+Now that I have a good idea of What states saw the largest increases and decreases in crime. I will now correlate that over to Covid Data provided by CDC.
+
+## Covid DATA
+
+When dealing with Covid, there are many different metrics that can be utilized. We could look at daily counts of infected, daily deaths, hospitalizations, or even total vaccinations. For this analysis I am only going to focus on the amount of deaths recorded in 2020 by state. 
+
+The plan is to compare the % change by the three crimes listed above by yearly total of deaths caused by Covid 19.
+
+
+```{r Read in the DATA, include=FALSE}
+
+covid_data <- read_csv("Provisional_COVID-19_Deaths_by_Place_of_Death_and_State.csv", na = c("","NA"))
+
+
+
+```
+
+## Cleaning and Prepping DATA
+
+```{r}
+#str(covid_data)
+covid_data$`End Date` <- as.Date(covid_data$`End Date`,"%m/%d/%Y")
+#str(covid_data)
+#covid_data
+filtered_covid <- covid_data %>% filter(`End Date`< "2021-01-01") %>% filter(`Place of Death` == "Total - All Places of Death" & State != "United States" & Group == "By Year") %>% mutate("States" = toupper(State) ) %>% select(States, `COVID-19 Deaths`)
+
+
+```
+
+I First needed to clean and prep the data. I changed the dates column from a character type to a date type and filtered out the unnecessary information. I then plotted the deaths and normalized that data across all states using the plot "usmap" function.
+
+
+```{r Plot the DATA}
+
+ covid_mapdata <- full_join(filtered_covid,state_info, by = "States")
+data_map <- covid_mapdata %>% select(fips, `COVID-19 Deaths`) %>% rename("Deaths" = `COVID-19 Deaths`)
+
+data_map <- data.frame(data_map)
+
+
+plot_usmap(data = data_map, values = "Deaths",labels = TRUE, color = "gray")+
+  scale_fill_continuous(low = "white", high = "blue", name = "Covid Fatalities", label = scales::comma)+
+    labs(title = "Covid Fatalitys in 2020")+
+   theme(panel.background = element_rect(color = "black", fill = "lightblue")) + theme(legend.position = "right")
+  
+```
+
+It looks like California and Texas had the largest amount of deaths around 30K. This info can be misleading, since states with lower populations will most likely have lower deaths but those deaths could be a higher percentage of the total population. To rectify this I will bring in the 2020 population data from the US Census for 2020, and I will create a field that is the amount of deaths per 100K population.
+
+
+```{r}
+
+population_2020 <- readxl::read_xlsx("2020 population.xlsx")
+
+
+
+population_2020$State <- toupper(population_2020$State)
+population_2020 <- rename(population_2020, "States" = State)
+
+Covid_data_updated <- inner_join(covid_mapdata, population_2020, by ="States")
+Covid_data_updated <- Covid_data_updated %>% mutate(
+  Per_capita = (`COVID-19 Deaths`/`2020 Census`)*100000
+)
+
+
+plot_usmap(data = Covid_data_updated, values = "Per_capita",labels = TRUE, color = "gray")+
+  scale_fill_continuous(low = "white", high = "blue", name = "Covid Fatalities", label = scales::comma)+
+    labs(title = "Covid Fatalitys in 2020")+
+   theme(panel.background = element_rect(color = "black", fill = "lightblue")) + theme(legend.position = "right")
+
+
+
+
+```
+
+
+# Results
+
+As we can see, the chart looks much different than the previous one. It looks like North Dakota, South Dakota and Delaware had the highest fatalities per 100k population. Hawaii had the lowest. I will now create a data table to look at the top and bottom % per crime vs the top and bottom percentage per fatalities.
+
+
+
+
+```{r}
+
+
+Top_covid <- Covid_data_updated %>% arrange(desc(Per_capita)) %>% select(States,Per_capita) %>% slice(1:5)
+
+Low_covid <- Covid_data_updated %>% arrange((Per_capita)) %>% select(States,Per_capita) %>% slice(1:5)
+
+
+Top_covid %>% kable(caption = "Highest Covid Fatalities by State")
+
+
+Low_covid %>% kable(caption = "Lowest Covid Fatalities by State")
+
+x1<- Crime_Change_data %>% arrange(`Property Crime % Change`) %>% select(States,`Property Crime % Change`) %>% slice(1:5) 
+
+y_1<-Crime_Change_data %>% arrange(desc(`Property Crime % Change`)) %>% select(States, `Property Crime % Change`) %>% slice(1:5) 
+
+x2<- Crime_Change_data %>% arrange(`Aggravated Assualt % Change`) %>% select(States,`Aggravated Assualt % Change`) %>% slice(1:5) 
+y2<- Crime_Change_data %>% arrange(desc(`Aggravated Assualt % Change`)) %>% select(States, `Aggravated Assualt % Change`) %>% slice(1:5)
+
+x3<- Crime_Change_data %>% arrange(`Murder % Change`) %>% select(States,`Murder % Change`) %>% slice(1:5)
+y3<- Crime_Change_data %>% arrange(desc(`Murder % Change`)) %>% select(States, `Murder % Change`) %>% slice(1:5)
+
+
+
+cbind(Top_covid,x1,x2,x3) 
+cbind(Low_covid,y_1,y2,y3)
+
+
+```
+
+
+
+
+```{r Pulling In Employmet DATA}
+library(knitr)
+
+unemployment_data <- read_csv("unemployement_rates.csv")
+unemployment_data$States = toupper(unemployment_data$States)
+unemployment_data <- unemployment_data %>% mutate(UnemploymentRate_change = (`unemployment rate 2020`- `unemployment rate 2019`)/`unemployment rate 2020`)
+
+unemployment_data %>% head()
+Crime_Change_data %>% head()
+Covid_data_updated %>% head()
+
+
+Total_DATA_1 <- inner_join(Crime_Change_data,unemployment_data, by = "States")
+Total_DATA_2 <- inner_join(Total_DATA_1, Covid_data_updated, by = "States")
+Total_DATA_2 %>% head()
+
+corr_data<- Total_DATA_2 %>% select(`Property Crime % Change`:`Murder % Change`,UnemploymentRate_change,`COVID-19 Deaths`,Per_capita)
+corr_data <- corr_data %>% rename("COVID 19 Deaths Per Capita" = Per_capita)
+cor(corr_data) %>% round(3)%>%kable()
+
+```
+
+
+```{r}
+library(reshape2)
+# Create a heatmap for cor matrix
+corr_matrix <- cor(corr_data)
+melted <- melt(corr_matrix)
+melted %>% head()
+melted$Var1 <- as.character(melted$Var1)
+melted$Var2 <- as.character(melted$Var2)
+
+
+ggplot(data = melted, aes(Var2, Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+   name="Corr Matrix") +
+  theme_minimal()+ 
+ theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed()+
+  xlab("")+
+  ylab("")
+
+
+```
+
+```{r }
+# Corr Matrix''''
+corr_data%>% head()
+  
+
+ pivot_data <- corr_data %>% pivot_longer(!c(`COVID-19 Deaths`,`COVID 19 Deaths Per Capita`),
+                                          
+    names_to = "Factor", 
+    values_to = "Percent_Change",
+  )
+
+ pivot_data
+ pivot_data %>% ggplot()+
+   geom_point(aes(x = `COVID-19 Deaths`, y = Percent_Change ), color = "deepskyblue2")+geom_smooth(aes(x = `COVID-19 Deaths`, y = Percent_Change), se = F)+
+   facet_wrap(~Factor, scales = "free")
+ 
+  pivot_data
+ pivot_data %>% ggplot()+
+   geom_point(aes(x = `COVID 19 Deaths Per Capita`, y = Percent_Change ), color = "deepskyblue2")+geom_smooth(aes(x = `COVID 19 Deaths Per Capita`, y = Percent_Change), se = F)+
+   facet_wrap(~Factor, scales = "free")
+ 
+ 
+ pivot_data 
+
+
+
+```
+
+
+
+
+
+```{r}
+library(texreg); library(lmtest)
+
+# Run Regression Analysis
+
+# Outcome Variable - Crime
+# Assualt
+
+lpm_assault <- lm(`Aggravated Assualt % Change`  ~ `COVID-19 Deaths`+ `COVID 19 Deaths Per Capita` +
+                    UnemploymentRate_change , data = corr_data)
+
+
+
+lpm_Property_crime <- lm(`Property Crime % Change` ~ `COVID-19 Deaths`+ `COVID 19 Deaths Per Capita`
+                         +UnemploymentRate_change, data = corr_data)
+
+
+lpm_Murder<- lm(`Murder % Change` ~ `COVID-19 Deaths`+ `COVID 19 Deaths Per Capita` 
+                +UnemploymentRate_change, data = corr_data)
+
+
+
+screenreg(list(lpm_assault,lpm_Property_crime,lpm_Murder), custom.header = list("Crime LPM's" = 1:3),custom.model.names = c("Assault","Murder","Property"))
+
+summary(lpm_assault)
+
+
+```
+
+
+```{r}
+# Assualt
+Lpm_unemployment <- lm(UnemploymentRate_change  ~ `COVID-19 Deaths`+ `COVID 19 Deaths Per Capita` + `Property Crime % Change`+`Murder % Change`+`Aggravated Assualt % Change` , data = corr_data)
+
+summary(Lpm_unemployment)
+
+
+```
+# Results
+
+For this project, I decided to just focus on property crimes, murder, and aggravated assault as the crimes of interest in this analysis. When property crimes, most of the states saw a decrease in property crime in 2020 when compared to 2021.  Pennsylvania saw the largest decrease in property crime while Georgia and West Virginia saw the largest increases in property crime. It appears that most of the states saw an increase in murders from 2019 to 2020, with Georgia seeing the largest increase. There was very little percent change in either direction across all states for aggravated assault, except for Alabama, where we saw a 6% increase in aggravated assault. 
+The correlation Matrix shows a high correlation between murder percent change and aggravated assault percent change. It also looks like murder has a high correlation with property crime percent change. COVID-19 deaths shows a negative correlation with property crimes and a positive correlation with unemployment rate. COVID-19 deaths per-capita, surprisingly, has a negative correlation with unemployment rate. 
+I created three unrestricted linear regression models, one for each crime.  When looking at Figure 8, the murder linear model explained the largest amount of variance at 4%. None of the models had any statistically significant covariates. 
+
+
+# Conclusion
+
+Crime rates in the United States are inversely proportional to the number of COVID-19 deaths for the crimes analyzed in this project. When deaths per capita were introduced, COVID-19 deaths per capita were proportional to assault and property crimes but inversely related to murder. Surprisingly, unemployment rates seem to be inversely proportional to crime rates. 
+
+It should be noted that none of the models have any covariates that are statistically significant (all p-values were >.05). For future research, I would recommend creating a larger sample size and looking into new crimes. It would also be beneficial to create smaller groups by states and regions and incorporating local policies such as stay-at-home orders.
+
+
+
+## References
+
+Crime, https://crime-data-explorer.fr.cloud.gov/pages/home. 
+“Table 1. Employment Status of the Civilian Noninstitutional Population 16 Years of Age and over by Region, Division, and State, 2019-20 Annual Averages.” U.S. Bureau of Labor Statistics, U.S. Bureau of Labor Statistics, 3 Mar. 2021, https://www.bls.gov/news.release/srgune.t01.htm.
+“Provisional COVID-19 Deaths by Place of Death and State.” Centers for Disease Control and Prevention, Centers for Disease Control and Prevention, https://data.cdc.gov/NCHS/Provisional-COVID-19-Deaths-by-Place-of-Death-and-/uggs-hy5q. 
+
+
