@@ -1,5 +1,3 @@
-Here are a collection of Projects I've worked on. The projects below were primarily done in R.
-
 ## Projects
 
 ### Shiny APPs
@@ -11,15 +9,14 @@ Same as above, but you can run for any stock. <br />
 [Drink Size Calculator](https://pjsulliv34.shinyapps.io/DrizeSizeCalculator/)<br />
 Find out BAC and how many standard drinks one has consumed.
 
-
-
-
 ### Static Projects
 #### Machine Learning
 [Regression Analysis](https://pjsulliv34.github.io/DACSS603/Final_Project.html) <br />
 Semi-Supervised Machine Learning solution. Look directing at alcohol data set with the purpose of prediciting abuse of alcohol.
 [Predicting Stock Prices](https://pjsulliv34.github.io/R-Projects/Stock-Price-Predictions.html)<br />
 Enter in a price of a stock and predict stock prices up to two months ahead using technicals.
+[Crime in the Time of Covid](https://pjsulliv34.github.io/R-Projects/Crime-in-the-Time-of-Covid_Final.html)
+Using linear regression to predict crimes based on covid deaths.
 
 #### Data Visualizations 
 [Stock Data Returns](https://pjsulliv34.github.io/dacss601/Final/Final-Project.html) <br />
