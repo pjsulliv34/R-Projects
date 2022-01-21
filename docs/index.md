@@ -3,7 +3,7 @@
 ### Shiny APPs
 
 [StockData Analysis](https://pjsulliv34.shinyapps.io/StockDataAnalysis/)<br />
-This takes in any stock. Performs linear regression analysis on 4 years of data and makes price predicitons as well as additional analysis.
+This takes in any stock. Performs linear regression analysis on 4 years of data and makes price predicitons as well as additional analysis.<br />
 [Regression Plots](https://pjsulliv34.shinyapps.io/Regression_Plots/)<br />
 Pre Set with Dow Jones Stocks. Allows user to set date range to look at regression lines, prices and volume of stock. <br />
 [Regression Plots 2](https://pjsulliv34.shinyapps.io/RegressionApp_2/)<br />
