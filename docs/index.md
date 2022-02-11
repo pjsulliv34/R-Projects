@@ -20,6 +20,11 @@ Enter in a price of a stock and predict stock prices up to two months ahead usin
 [Crime in the Time of Covid](https://pjsulliv34.github.io/R-Projects/Crime-in-the-Time-of-Covid_Final.html)<br />
 Using linear regression to predict crimes based on covid deaths.
 
+
+#### Network Analysis
+[Airport DATA](https://pjsulliv34.github.io/Blog/posts/2022-02-03-networkanalysishw1/)<br />
+[A Closer Look into Enrons Emails](https://pjsulliv34.github.io/Blog/posts/networks-hw-2/)<br />
+
 #### Data Visualizations 
 [Stock Data Returns](https://pjsulliv34.github.io/dacss601/Final/Final-Project.html) <br />
 [UFO's Visualized in the US](https://pjsulliv34.github.io/dacss601/HW3/UFOwatchHW3.html) <br />
