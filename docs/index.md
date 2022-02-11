@@ -23,7 +23,9 @@ Using linear regression to predict crimes based on covid deaths.
 
 #### Network Analysis
 [Airport DATA](https://pjsulliv34.github.io/Blog/posts/2022-02-03-networkanalysishw1/)<br />
+A deep dive into the network of airports in the United States.<br />
 [A Closer Look into Enrons Emails](https://pjsulliv34.github.io/Blog/posts/networks-hw-2/)<br />
+Looking into the email activity of all enron employees<br />
 
 #### Data Visualizations 
 [Stock Data Returns](https://pjsulliv34.github.io/dacss601/Final/Final-Project.html) <br />
