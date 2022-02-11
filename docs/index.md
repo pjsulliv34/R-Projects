@@ -35,5 +35,6 @@ Looking into the email activity of all enron employees<br />
 [Diabetes Data](https://pjsulliv34.github.io/dacss601/HW1+2/Hw2DiabetesData.html) <br />
 
 #### Blog
-For Additional information please navigate to my Blog:(https://pjsulliv34.github.io/Blog/)
+For Additional information please navigate to my Blog:<br />
+[Peters Blog](https://pjsulliv34.github.io/Blog/)
 
