@@ -1,4 +1,4 @@
-## Projects
+## Projects and Blog
 
 ### Shiny APPs
 
@@ -34,8 +34,6 @@ Looking into the email activity of all enron employees<br />
 [Austrailian Weather Data](https://pjsulliv34.github.io/dacss601/HW4/AustrailiaWeatherData.html) <br />
 [Diabetes Data](https://pjsulliv34.github.io/dacss601/HW1+2/Hw2DiabetesData.html) <br />
 
-
-
-
-
+#### Blog
+For Additional information please navigate to my Blog:(https://pjsulliv34.github.io/Blog/)
 
