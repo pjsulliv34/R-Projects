@@ -1,5 +1,9 @@
 ## Projects and Blog
 
+### Blog
+For Additional information please navigate to my Blog:<br />
+[Peters Blog](https://pjsulliv34.github.io/Blog/)
+
 ### Shiny APPs
 
 [StockData Analysis](https://pjsulliv34.shinyapps.io/StockDataAnalysis/)<br />
@@ -34,7 +38,5 @@ Looking into the email activity of all enron employees<br />
 [Austrailian Weather Data](https://pjsulliv34.github.io/dacss601/HW4/AustrailiaWeatherData.html) <br />
 [Diabetes Data](https://pjsulliv34.github.io/dacss601/HW1+2/Hw2DiabetesData.html) <br />
 
-#### Blog
-For Additional information please navigate to my Blog:<br />
-[Peters Blog](https://pjsulliv34.github.io/Blog/)
+
 
