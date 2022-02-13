@@ -2,7 +2,7 @@
 
 ### Blog
 For Additional information please navigate to my Blog:<br />
-[Peters Blog](https://pjsulliv34.github.io/Blog/)
+[Peters Blog](https://www.sulliv.com/)
 
 ### Shiny APPs
 
